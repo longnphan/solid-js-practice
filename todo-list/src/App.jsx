@@ -1,24 +1,32 @@
-import logo from './logo.svg';
-import styles from './App.module.css';
+import { createSignal, batch, For } from "solid-js";
+import styles from "./App.module.css";
 
 function App() {
+  const [list, setList] = createSignal([]);
+  const [textInput, setTextInput] = createSignal("");
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    batch(() => {
+      setList(prev => [...prev, textInput()]);
+      setTextInput("");
+    });
+  };
+
   return (
-    <div class={styles.App}>
-      <header class={styles.header}>
-        <img src={logo} class={styles.logo} alt="logo" />
-        <p>
-          Edit <code>src/App.jsx</code> and save to reload.
-        </p>
-        <a
-          class={styles.link}
-          href="https://github.com/solidjs/solid"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn Solid
-        </a>
-      </header>
-    </div>
+    <>
+      <form onSubmit={handleSubmit}>
+        <input
+          value={textInput()}
+          onChange={e => setTextInput(e.target.value)}
+        />
+        <button>Add</button>
+      </form>
+      <h1>To Do:</h1>
+      <ul>
+        <For each={list()}>{item => <li>{item}</li>}</For>
+      </ul>
+    </>
   );
 }
 
